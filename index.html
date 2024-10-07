@@ -3,5 +3,29 @@
 <body>
 <h1>Hello World</h1>
 <p>I'm hosted with GitHub Pages.</p>
+
+<!-- Facebook SDK JavaScript Code -->
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '3513554012287466',  // Replace with your actual App ID
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v21.0'  // Use the API version you were given
+    });
+    
+    FB.AppEvents.logPageView();   
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+<!-- End of Facebook SDK Code -->
+
 </body>
 </html>
