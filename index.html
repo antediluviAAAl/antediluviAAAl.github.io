@@ -59,7 +59,7 @@
               } else {
                   console.log('User cancelled login or did not fully authorize.');
               }
-          }, {scope: 'public_profile,email'});
+          }, {scope: 'public_profile,email,groups_access_member_info,user_posts'});
       }
 
       // Fetch user data after successful login
