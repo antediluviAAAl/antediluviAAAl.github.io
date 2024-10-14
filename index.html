@@ -7,15 +7,8 @@
     <h1>Hello World</h1>
     <p>I'm hosted with GitHub Pages.</p>
 
-    <!-- Facebook Login Button -->
-    <div class="fb-login-button" 
-         data-width="" 
-         data-size="large" 
-         data-button-type="login_with" 
-         data-layout="default" 
-         data-auto-logout-link="false" 
-         data-use-continue-as="true">
-    </div>
+    <!-- Custom Facebook Login Button -->
+    <button onclick="facebookLogin()">Login with Facebook</button>
 
     <!-- Status message area -->
     <p id="status"></p>
@@ -50,6 +43,18 @@
               // Not logged in, show the Facebook login button.
               document.getElementById('status').innerHTML = 'Please log in with Facebook.';
           }
+      }
+
+      // Custom Facebook Login with email permission
+      function facebookLogin() {
+          FB.login(function(response) {
+              if (response.authResponse) {
+                  // Logged in, now fetch user data
+                  getUserData();
+              } else {
+                  console.log('User cancelled login or did not fully authorize.');
+              }
+          }, {scope: 'public_profile,email'});
       }
 
       // Fetch user data after successful login
