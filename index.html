@@ -16,9 +16,15 @@
     <!-- Logout button -->
     <button onclick="logout()">Logout</button>
 
-    <!-- Display user's avatar -->
-    <div id="profile-info">
-        <img id="avatar" src="" alt="User Avatar" style="display:none; width:100px; height:100px;"/>
+    <!-- Input field for Post ID and button to trigger comment fetching -->
+    <div>
+        <input type="text" id="postIdInput" placeholder="Enter Post ID">
+        <button onclick="fetchComments()">Fetch Comments</button>
+    </div>
+
+    <!-- Section to display comments -->
+    <div id="comments-section">
+        <h2>Post Comments</h2>
     </div>
 
     <!-- Facebook SDK JavaScript Code -->
@@ -37,24 +43,20 @@
           });
       };
 
-      // This function is called with the results from FB.getLoginStatus().
+      // Function to check login status
       function statusChangeCallback(response) {
-          console.log(response);
           if (response.status === 'connected') {
-              // Logged into your app and Facebook.
               document.getElementById('status').innerHTML = 'You are logged in!';
-              getUserData();  // Fetch user info
+              getUserData();
           } else {
-              // Not logged in, show the Facebook login button.
               document.getElementById('status').innerHTML = 'Please log in with Facebook.';
           }
       }
 
-      // Custom Facebook Login with email permission
+      // Custom Facebook Login with extra permissions
       function facebookLogin() {
           FB.login(function(response) {
               if (response.authResponse) {
-                  // Logged in, now fetch user data
                   getUserData();
               } else {
                   console.log('User cancelled login or did not fully authorize.');
@@ -62,19 +64,44 @@
           }, {scope: 'public_profile,email,groups_access_member_info,user_posts'});
       }
 
-      // Fetch user data after successful login
+      // Fetch user data after login
       function getUserData() {
-          FB.api('/me', { fields: 'id,name,email,picture' }, function(response) {
-              if (response && !response.error) {
-                  console.log('User Info:', response);
-                  document.getElementById('status').innerHTML = 'Logged in as: ' + response.name + ' (' + response.email + ')';
-                  
-                  // Display the user's avatar
-                  document.getElementById('avatar').src = response.picture.data.url;
-                  document.getElementById('avatar').style.display = 'block';  // Show the avatar image
-              } else {
-                  console.error('Error fetching user data:', response.error);
-              }
+          FB.api('/me', { fields: 'name,email' }, function(response) {
+              document.getElementById('status').innerHTML = 'Logged in as: ' + response.name;
+          });
+      }
+
+      // Function to fetch comments from user-entered Post ID
+      function fetchComments() {
+          const postId = document.getElementById('postIdInput').value;  // Get postId from input field
+          if (postId) {
+              FB.api(
+                  `/${postId}/comments`,
+                  'GET',
+                  {},
+                  function(response) {
+                      if (response && !response.error) {
+                          console.log('Comments:', response.data);
+                          displayComments(response.data);
+                      } else {
+                          console.error('Error fetching comments:', response.error);
+                          document.getElementById('comments-section').innerHTML = 'Error fetching comments.';
+                      }
+                  }
+              );
+          } else {
+              alert('Please enter a Post ID.');
+          }
+      }
+
+      // Function to display comments on the page
+      function displayComments(comments) {
+          const commentsDiv = document.getElementById('comments-section');
+          commentsDiv.innerHTML = '';  // Clear previous comments
+          comments.forEach(comment => {
+              const commentP = document.createElement('p');
+              commentP.innerText = `${comment.from.name}: ${comment.message} (at ${comment.created_time})`;
+              commentsDiv.appendChild(commentP);
           });
       }
 
@@ -82,7 +109,6 @@
       function logout() {
           FB.logout(function(response) {
               document.getElementById('status').innerHTML = 'You are logged out!';
-              document.getElementById('avatar').style.display = 'none'; // Hide the avatar on logout
           });
       }
 
