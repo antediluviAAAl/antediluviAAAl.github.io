@@ -1,60 +1,86 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Facebook Login</title>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <h1>Hello World</h1>
+    <p>I'm hosted with GitHub Pages.</p>
 
-<!-- Facebook Login Button -->
-<div class="fb-login-button" 
-     data-width="" 
-     data-size="large" 
-     data-button-type="login_with" 
-     data-layout="default" 
-     data-auto-logout-link="false" 
-     data-use-continue-as="true">
-</div>
+    <!-- Facebook Login Button -->
+    <div class="fb-login-button" 
+         data-width="" 
+         data-size="large" 
+         data-button-type="login_with" 
+         data-layout="default" 
+         data-auto-logout-link="false" 
+         data-use-continue-as="true">
+    </div>
 
-<!-- Status message area -->
-<p id="status"></p>
+    <!-- Status message area -->
+    <p id="status"></p>
 
-<!-- Facebook SDK JavaScript Code -->
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1227457511806295',  // Your actual App ID
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v21.0'         // Use the API version you are using
-    });
+    <!-- Logout button -->
+    <button onclick="logout()">Logout</button>
 
-    // Check login status on page load
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
-  };
+    <!-- Facebook SDK JavaScript Code -->
+    <script>
+      window.fbAsyncInit = function() {
+          FB.init({
+              appId      : '1227457511806295',  // Your actual App ID
+              cookie     : true,
+              xfbml      : true,
+              version    : 'v21.0'         // Use the API version you are using
+          });
 
-  // This function is called with the results from FB.getLoginStatus().
-  function statusChangeCallback(response) {
-    console.log(response);
-    if (response.status === 'connected') {
-      // Logged into your app and Facebook.
-      document.getElementById('status').innerHTML = 'You are logged in!';
-    } else {
-      // Not logged in, show the Facebook login button.
-      document.getElementById('status').innerHTML = 'Please log in with Facebook.';
-    }
-  }
+          // Check login status on page load
+          FB.getLoginStatus(function(response) {
+              statusChangeCallback(response);
+          });
+      };
 
-  // Load the SDK asynchronously
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
-<!-- End of Facebook SDK Code -->
+      // This function is called with the results from FB.getLoginStatus().
+      function statusChangeCallback(response) {
+          console.log(response);
+          if (response.status === 'connected') {
+              // Logged into your app and Facebook.
+              document.getElementById('status').innerHTML = 'You are logged in!';
+              getUserData();  // Fetch user info
+          } else {
+              // Not logged in, show the Facebook login button.
+              document.getElementById('status').innerHTML = 'Please log in with Facebook.';
+          }
+      }
+
+      // Fetch user data after successful login
+      function getUserData() {
+          FB.api('/me', { fields: 'id,name,email' }, function(response) {
+              if (response && !response.error) {
+                  console.log('User Info:', response);
+                  document.getElementById('status').innerHTML = 'Logged in as: ' + response.name + ' (' + response.email + ')';
+              } else {
+                  console.error('Error fetching user data:', response.error);
+              }
+          });
+      }
+
+      // Logout function
+      function logout() {
+          FB.logout(function(response) {
+              document.getElementById('status').innerHTML = 'You are logged out!';
+          });
+      }
+
+      // Load the SDK asynchronously
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <!-- End of Facebook SDK Code -->
 
 </body>
 </html>
