@@ -10,16 +10,16 @@
     <!-- Custom Facebook Login Button -->
     <button onclick="facebookLogin()">Login with Facebook</button>
 
-    <!-- Display user's avatar -->
-    <div id="profile-info">
-        <img id="avatar" src="" alt="User Avatar" style="display:none; width:100px; height:100px;"/>
-    </div>
-
     <!-- Status message area -->
     <p id="status"></p>
 
     <!-- Logout button -->
     <button onclick="logout()">Logout</button>
+
+    <!-- Display user's avatar -->
+    <div id="profile-info">
+        <img id="avatar" src="" alt="User Avatar" style="display:none; width:100px; height:100px;"/>
+    </div>
 
     <!-- Facebook SDK JavaScript Code -->
     <script>
@@ -64,10 +64,14 @@
 
       // Fetch user data after successful login
       function getUserData() {
-          FB.api('/me', { fields: 'id,name,email' }, function(response) {
+          FB.api('/me', { fields: 'id,name,email,picture' }, function(response) {
               if (response && !response.error) {
                   console.log('User Info:', response);
                   document.getElementById('status').innerHTML = 'Logged in as: ' + response.name + ' (' + response.email + ')';
+                  
+                  // Display the user's avatar
+                  document.getElementById('avatar').src = response.picture.data.url;
+                  document.getElementById('avatar').style.display = 'block';  // Show the avatar image
               } else {
                   console.error('Error fetching user data:', response.error);
               }
@@ -78,6 +82,7 @@
       function logout() {
           FB.logout(function(response) {
               document.getElementById('status').innerHTML = 'You are logged out!';
+              document.getElementById('avatar').style.display = 'none'; // Hide the avatar on logout
           });
       }
 
